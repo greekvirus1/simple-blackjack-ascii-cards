@@ -105,6 +105,11 @@ and draw exactly one more card, then stand.""")
                     print("You win {}!".format(round(bet*1.5)+ bet))
                     print("'Hmm.'")
                     money += (round(bet*1.5) + bet)
+                else:
+                    print("You win {}!".format(bet))
+                    print("The House always wins in the end, Chum.")
+                    time.sleep(0.5)
+                    money += 2*bet
             elif playerValue > dealerValue:
                 if playerValue == 21 and len(playerHand) == 2:
                     time.sleep(0.5)
@@ -172,15 +177,13 @@ def getDeck():
 
 def getHandValue(hand, showHiddenCard = True):
     value = 0
+    aces = 0
     if showHiddenCard:
         for card in hand:
             if (card[0] == "J") or (card[0] == "Q") or (card[0] == "K"):
                 value += 10
             elif card[0] == "A":
-                if value + 11 > 21:
-                    value += 1
-                else:
-                    value +=11
+                aces += 1
             else:
                 value += card[0]
     else:
@@ -188,9 +191,14 @@ def getHandValue(hand, showHiddenCard = True):
             if (card[0] == "J") or (card[0] == "Q") or (card[0] == "K"):
                 value += 10
             elif card[0] == "A":
-                value += 11
+                aces += 1
             else:
                 value += card[0]
+    if aces > 0:
+        if 11 + value + aces - 1 > 21:
+            value += aces
+        else:
+            value += 11 + aces - 1
     return value
 
 
