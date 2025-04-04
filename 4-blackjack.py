@@ -26,10 +26,12 @@ Available actions:
 (H)it: Draw one more card
 (S)tand: End your turn
 (D)ouble-down: On your first draw you can double your bet
-and draw exactly one more card, then stand.""")
+and draw exactly one more card, then stand.
+
+""")
 
     input("Press 'Enter' to continue:")
-    money = 500
+    money = 200
     while True:
         #Game Start
         deck = getDeck()
@@ -46,7 +48,7 @@ and draw exactly one more card, then stand.""")
             #Player Actions
             time.sleep(1)
             displayHands(money, bet, playerHand, dealerHand, showHiddenCard)
-            action = getAction(playerHand)
+            action = getAction(playerHand, bet, money)
             if action == "s":
                 showHiddenCard = True
                 print("'Stand.'")
@@ -71,15 +73,26 @@ and draw exactly one more card, then stand.""")
                 displayHands(money, bet, playerHand, dealerHand, showHiddenCard)
                 print("You have bust and lose your bet.")
                 time.sleep(1)
-                print("'Bad luck, Chum.")
+                print("'Bad luck, Chum.'")
                 time.sleep(1)
-                print("Type 'q' to Quit. Press 'Enter' to continue. ")
-                if input("> ").lower().startswith("q"):
-                    print("You walk away with {} money.".format(money))
+                if money < 1:
+                    time.sleep(2)
+                    print("The dealer throws you out of the casino.")
+                    time.sleep(1)
+                    print("'Get out of here, loser.'")
+                    time.sleep(2)
+                    print("You walk away with nothing")
                     exit()
                 else:
-                    break
+                    print("Type 'q' to Quit. Press 'Enter' to continue. ")
+                    if input("> ").lower().startswith("q"):
+                        print("You walk away with {}£.".format(money))
+                        exit()
+                    else:
+                        break
             while True:
+                if getHandValue(playerHand) > 21:
+                    break
                 time.sleep(2)
                 displayHands(money, bet, playerHand, dealerHand, showHiddenCard)
                 if getHandValue(dealerHand) <17:
@@ -90,36 +103,35 @@ and draw exactly one more card, then stand.""")
                     break
                 else:
                     break
-            time.sleep(6)
+            time.sleep(4)
             displayHands(money, bet, playerHand, dealerHand, showHiddenCard)
             dealerValue = getHandValue(dealerHand)
             playerValue = getHandValue(playerHand)
             if dealerValue > 21:
                 time.sleep(1)
                 print("The dealer has bust! You win.")
-                print("'The house always wins in the end, Chum.'")
                 if playerValue == 21 and len(playerHand) == 2:
                     time.sleep(0.5)
-                    print("As you have blackjack your payout increases")
+                    print("As you have blackjack your payout increases.")
                     time.sleep(0.5)
-                    print("You win {}!".format(round(bet*1.5)+ bet))
+                    print("You win {}£!".format(round(bet*1.5)+ bet))
                     print("'Hmm.'")
                     money += (round(bet*1.5) + bet)
                 else:
-                    print("You win {}!".format(bet))
-                    print("The House always wins in the end, Chum.")
+                    print("You win {}£!".format(bet))
+                    print("'The House always wins in the end, Chum.'")
                     time.sleep(0.5)
                     money += 2*bet
             elif playerValue > dealerValue:
                 if playerValue == 21 and len(playerHand) == 2:
                     time.sleep(0.5)
-                    print("As you have blackjack your payout increases")
+                    print("As you have blackjack your payout increases.")
                     time.sleep(0.5)
-                    print("You win {}!".format(round(bet*1.5)))
+                    print("You win {}£!".format(round(bet*1.5)))
                     print("'Dang.'")
                     money += (round(bet*1.5) + bet)
                 else:
-                    print("You win {}!".format(bet))
+                    print("You win {}£!".format(bet))
                     print("The House always wins in the end, Chum.")
                     time.sleep(0.5)
                     money += 2*bet
@@ -131,13 +143,13 @@ and draw exactly one more card, then stand.""")
                 if len(playerHand) < len(dealerHand):
                     if playerValue == 21 and len(playerHand) == 2:
                         time.sleep(0.5)
-                        print("As you have blackjack your payout increases")
+                        print("As you have blackjack your payout increases.")
                         time.sleep(0.5)
-                        print("You win {}!".format(round(bet*1.5)))
+                        print("You win {}£!".format(round(bet*1.5)))
                         print("'Ugh.'")
                         money += (round(bet*1.5) + bet)
                     else:
-                        print("You win {}!".format(bet))
+                        print("You win {}£!".format(bet))
                         print("The House always wins in the end, Chum.")
                         time.sleep(0.5)
                         money += 2*bet
@@ -154,12 +166,20 @@ and draw exactly one more card, then stand.""")
                     money += bet
                     print("'Close, but no cigar, Chum.")
             time.sleep(1)
-            print("Type 'q' to Quit. Press 'Enter' to continue. ")
-            if input("> ").lower().startswith("q"):
-                print("You walk away with {} money.".format(money))
-                exit()
+            if money < 1:
+                time.sleep(2)
+                print("The dealer throws you out of the casino.")
+                time.sleep(1)
+                print("'Get out of here, loser.")
+                time.sleep(2)
+                print("You walk away with nothing")
             else:
-                break
+                print("Type 'q' to Quit. Press 'Enter' to continue. ")
+                if input("> ").lower().startswith("q"):
+                    print("You walk away with {}£.".format(money))
+                    exit()
+                else:
+                    break
 
 
 
@@ -232,7 +252,9 @@ def getBet(money):
         try:
             print("Please input bet: (Money = {})".format(money))
             bet = int(input("> "))
-            if bet <= money:
+            if bet <= 0:
+                print("Bet must be at least 1£.")
+            elif bet <= money:
                 break
             else:
                 print("Not enough money!")
@@ -244,13 +266,14 @@ def getBet(money):
 def displayHands(money, bet, playerHand, dealerHand, showHiddenCard=False):
     
     print("""
-Money: {}
-Bet: {}
+Money: {}£
+Bet: {}£
+
 Dealer: {}
 {}
 Player: {}
 {}""".format(money, bet, getHandValue(dealerHand, showHiddenCard), displayCards(dealerHand, showHiddenCard), getHandValue(playerHand), displayCards(playerHand)))
-    if (len(playerHand) == 2) and (showHiddenCard == False) and (bet*2 <= money):
+    if (len(playerHand) == 2) and (showHiddenCard == False) and (bet <= money):
         print("""
 Actions:
     (H)it
@@ -263,9 +286,9 @@ Actions:
     (S)tand""")
 
 
-def getAction(playerHand):
+def getAction(playerHand, bet, money):
     while True:
-        if len(playerHand) == 2:
+        if len(playerHand) == 2 and bet <= money:
             print("Input action:")
             action = input("> ")
             if action.lower().startswith("h") or action.lower().startswith("s") or action.lower().startswith("d"):
