@@ -170,7 +170,7 @@ and draw exactly one more card, then stand.
                 time.sleep(2)
                 print("The dealer throws you out of the casino.")
                 time.sleep(1)
-                print("'Get out of here, loser.")
+                print("'Get out of here, loser.'")
                 time.sleep(2)
                 print("You walk away with nothing")
             else:
